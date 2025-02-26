@@ -40,7 +40,7 @@ const BenefitCards = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">Competitive Edge</h3>
-            <p className="text-gray-600">Compare your ads against competitors and industry standards. Our AI highlights unique selling points and suggests improvements to help you stand out.</p>
+            <p className="text-gray-600">Compare your ads against competitors and industry standards. Our AI highlights unique performance points and suggests improvements to help you stand out.</p>
           </div>
         </div>
       </div>
