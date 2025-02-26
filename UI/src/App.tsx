@@ -68,17 +68,17 @@ function App() {
     formData.append("adImage", selectedFile); // Match the backend's field name
 
     try {
-      // const response = await fetch("http://localhost:3000/analyze-ad", {
-      //   method: "POST",
-      //   body: formData,
-      // });
+      const response = await fetch("https://ai-ads-analyzer.vercel.app/analyze-ad", {
+        method: "POST",
+        body: formData,
+      });
 
-      // if (!response.ok) {
-      //   throw new Error("Failed to analyze image");
-      // }
+      if (!response.ok) {
+        throw new Error("Failed to analyze image");
+      }
 
-      // const result = await response.json();
-      // console.log(result.analysis);
+      const result = await response.json();
+      console.log(result.analysis);
       const analysis_dummy: any = {
         "hook": {
           "score": "45/50",
