@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Copy, Play } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/';
 
 function App() {
   const [data, setData] = useState<AdAnalysis | null>(null);
@@ -68,7 +69,7 @@ function App() {
     formData.append("adImage", selectedFile); // Match the backend's field name
 
     try {
-      const response = await fetch("https://ai-ads-analyzer.vercel.app/analyze-ad", {
+      const response = await fetch(API_BASE_URL+"/analyze-ad", {
         method: "POST",
         body: formData,
       });
