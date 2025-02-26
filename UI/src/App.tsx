@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Copy, Play } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
+import BenefitCards from './components/BenifitsCard';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 function App() {
@@ -10,11 +11,13 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileBlob, setFileBlob] = useState<string | null>(null);
+  const [imageSubmitted, setImageSubmitted] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSaveFile = (file: File) => {
     setSelectedFile(file);
     setFileBlob(URL.createObjectURL(file));
+    setImageSubmitted(false);
   }
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -60,6 +63,7 @@ function App() {
       return;
     }
 
+    setImageSubmitted(true);
     setIsLoading(true);
     setError(null);
     setData(null);
@@ -150,11 +154,11 @@ function App() {
         )}
 
         {/* Analysis Grid */}
-        <div className="grid grid-cols-[40%_60%] gap-6 h-full">
-          <div className="h-full  overflow-hidden">
+        <div className={`grid  ${(selectedFile && imageSubmitted) ? 'grid-cols-[40%_60%]' : 'grid-cols-[100%]'} gap-6 h-full`}>
+          <div className="h-full ">
             <div className="mb-8">
               <div
-                className={`flex justify-center px-6 pt-5 pb-6 border-2 ${selectedFile ? 'border-indigo-500' : 'border-gray-300 border-dashed'
+                className={`flex justify-center px-6 pt-5 pb-6 border-2 ${selectedFile ? 'border-indigo-500' : 'border-gray-300 border-dashed col-span-full row-span-full'
                   } rounded-lg hover:border-indigo-500 transition-colors duration-200`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
@@ -169,7 +173,7 @@ function App() {
                   <div className="flex text-sm text-gray-600">
                     <label
                       htmlFor="file-upload"
-                      className="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                      className="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none"
                     >
                       <span>Upload an image of your ad</span>
                       <input
@@ -192,16 +196,26 @@ function App() {
                 </div>
               </div>
             </div>
-            <div className='relative h-fit'>
-            {fileBlob && (
-              <div className="relative overflow-hidden w-fit">
-                <img className="h-auto max-w-full object-contain mb-2" src={fileBlob} alt="Scanned Image" />
-                {isLoading && (
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan"></div>
-                )}
-              </div>
-            )}
-          </div>
+            <div className='relative h-fit d-flex align-items-center'>
+              {fileBlob && (
+                <div className="relative  overflow-hidden w-full flex justify-center">
+                  <img className="h-auto max-w-full object-contain mb-2" src={fileBlob} alt="Scanned Image" />
+                  {isLoading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan"></div>
+                  )}
+                </div>
+              )}
+              {!imageSubmitted && selectedFile && <div className="w-full flex items-center justify-center">
+                <button
+                  onClick={analyzeImage}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-lg animate-pulse font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                  disabled={isLoading || !selectedFile}
+                >
+                  <Play className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
+                  Analyze
+                </button>
+              </div>}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -211,7 +225,11 @@ function App() {
             <ScoreCard title="Captions" analysis={data?.captions} isLoading={isLoading} />
           </div>
         </div>
-
+        {
+          !selectedFile && <>
+            <BenefitCards />
+          </>
+        }
         {/* Summary Section */}
         {isLoading ? (
           <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg animate-pulse">
