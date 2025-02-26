@@ -46,7 +46,7 @@ app.use((req, res, next) => {
   res.header("Access-Control-Allow-Headers", "Content-Type");
   next();
 });
-const upload = multer({ dest:"/tmp/" });
+const upload = multer({ dest: "uploads/" });
 const anthropic = new Anthropic();
 
 // Streaming Claude API function
@@ -200,7 +200,7 @@ app.post("/analyze-ad", upload.single("adImage"), async (req: Request, res: Resp
     
     const textContent = response?.find((item: any) => item?.type === "text")?.text || "";
     const parsedData = parseAdReport(textContent);
-    console.log(parsedData,'parsedData')
+    
     res.json({analysis:parsedData});
 
     
@@ -219,5 +219,6 @@ app.post("/analyze-ad", upload.single("adImage"), async (req: Request, res: Resp
   }
 });
 
+const port = process.env.PORT || 3000;
 // Start Server
-app.listen(3000, () => console.log("Server running on port 3000"));
+app.listen(port, () => console.log("Server running on port 3000"));
