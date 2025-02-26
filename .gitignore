@@ -50,7 +50,6 @@ public
 # vuepress
 .temp
 .cache
-dist
 
 # Serverless directories
 .serverless
