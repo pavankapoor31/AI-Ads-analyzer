@@ -3,6 +3,7 @@ import { Upload, RefreshCw, Copy, Play } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
 import BenefitCards from './components/BenifitsCard';
+import DUMMY_AD from "./static/burgerworld_ad.png"
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 function App() {
@@ -103,12 +104,29 @@ function App() {
 
     navigator.clipboard.writeText(report);
   };
+  const handleUseDummyImage = () => {
+    // Create a fetch to get the dummy image as a blob
+    fetch(DUMMY_AD)
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a File object from the blob
+        const dummyFile = new File([blob], "dummy_ad.png", { type: "image/png" });
+        
+        // Use the existing handleSaveFile function
+        handleSaveFile(dummyFile);
+        setError(null);
+      })
+      .catch(err => {
+        setError("Failed to load dummy image");
+        console.error(err);
+      });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-gray-100 to-green-100">
-      <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
           <div className="">
             <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
               AI Meta Ads Analyzer
@@ -195,6 +213,7 @@ function App() {
                   )}
                 </div>
               </div>
+              <div className="text-gray-500 cursor-pointer mt-0 text-sm"  onClick={handleUseDummyImage} > Dont have an ad yet? click here to use a dummy ad image </div>
             </div>
             <div className='relative h-fit d-flex align-items-center'>
               {fileBlob && (
@@ -261,6 +280,7 @@ function App() {
           </div>
         ) : null}
       </div>
+      
     </div>
   );
 }
