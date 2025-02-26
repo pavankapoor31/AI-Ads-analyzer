@@ -1,12 +1,13 @@
 require("dotenv").config();
-import helmet from 'helmet';
-import cors from 'cors';
+import helmet from "helmet";
+import cors from "cors";
 import express, { Request, Response } from "express";
-import Anthropic from '@anthropic-ai/sdk';
+import Anthropic from "@anthropic-ai/sdk";
 import multer from "multer";
 import fs from "fs";
+import path from "path"; // Add this import for path handling
 
-// Define interfaces
+// Define interfaces (unchanged)
 interface ClaudeMessage {
   role: string;
   content: string;
@@ -45,73 +46,75 @@ const app = express();
 
 app.use(cors());
 app.use(helmet());
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-//   res.header("Access-Control-Allow-Methods", "GET,POST");
-//   res.header("Access-Control-Allow-Headers", "Content-Type");
-//   next();
-// });
-const upload = multer({ dest: "uploads/" });
+
+// Configure Multer to use /tmp directory for serverless environments
+const upload = multer({
+  dest: "/tmp/", // Use /tmp/ for temporary file storage
+  // Optional: Customize filename to avoid conflicts
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "/tmp/"); // Ensure this directory is used
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
+    },
+  }),
+});
+
 const anthropic = new Anthropic();
 
-// Streaming Claude API function
-const asyncTalkToAI = async (
-  messages: ClaudeMessage[],
-  config: ClaudeConfig = {}
-) => {
-  const payload:any = {
+// Streaming Claude API function (unchanged)
+const asyncTalkToAI = async (messages: ClaudeMessage[], config: ClaudeConfig = {}) => {
+  const payload: any = {
     model: "claude-3-5-sonnet-20241022",
     max_tokens: 1000,
     messages: messages as any,
-    ...config
-  }
+    ...config,
+  };
   const message = await anthropic.messages.create(payload);
   return message;
 };
 
+// parseAdReport function (unchanged)
 function parseAdReport(xmlString: string): ParsedAdReport {
   const result: ParsedAdReport = {};
   
-  // Extract hook section
   const hookMatch = xmlString.match(/<hook>[\s\S]*?<score>(.*?)<\/score>[\s\S]*?<what_works>([\s\S]*?)<\/what_works>[\s\S]*?<what_needs_improvement>([\s\S]*?)<\/what_needs_improvement>[\s\S]*?<\/hook>/);
   if (hookMatch) {
     result.hook = {
       score: hookMatch[1].trim(),
-      whatWorks: hookMatch[2].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0),
-      whatNeedsImprovement: hookMatch[3].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0)
+      whatWorks: hookMatch[2].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
+      whatNeedsImprovement: hookMatch[3].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
     };
   }
   
-  // Extract script section
   const scriptMatch = xmlString.match(/<script>[\s\S]*?<score>(.*?)<\/score>[\s\S]*?<what_works>([\s\S]*?)<\/what_works>[\s\S]*?<what_needs_improvement>([\s\S]*?)<\/what_needs_improvement>[\s\S]*?<\/script>/);
   if (scriptMatch) {
     result.script = {
       score: scriptMatch[1].trim(),
-      whatWorks: scriptMatch[2].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0),
-      whatNeedsImprovement: scriptMatch[3].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0)
+      whatWorks: scriptMatch[2].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
+      whatNeedsImprovement: scriptMatch[3].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
     };
   }
   
-  // Extract visuals section (note: may not have what_needs_improvement)
   const visualsMatch = xmlString.match(/<visuals>[\s\S]*?<score>(.*?)<\/score>[\s\S]*?<what_works>([\s\S]*?)<\/what_works>[\s\S]*?<\/visuals>/);
   if (visualsMatch) {
     result.visuals = {
       score: visualsMatch[1].trim(),
-      whatWorks: visualsMatch[2].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0)
+      whatWorks: visualsMatch[2].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
     };
   }
   
-  // Extract captions section
   const captionsMatch = xmlString.match(/<captions>[\s\S]*?<score>(.*?)<\/score>[\s\S]*?<what_works>([\s\S]*?)<\/what_works>[\s\S]*?<what_needs_improvement>([\s\S]*?)<\/what_needs_improvement>[\s\S]*?<\/captions>/);
   if (captionsMatch) {
     result.captions = {
       score: captionsMatch[1].trim(),
-      whatWorks: captionsMatch[2].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0),
-      whatNeedsImprovement: captionsMatch[3].trim().split('\n').map(item => item.trim()).filter(item => item.length > 0)
+      whatWorks: captionsMatch[2].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
+      whatNeedsImprovement: captionsMatch[3].trim().split("\n").map((item) => item.trim()).filter((item) => item.length > 0),
     };
   }
   
-  // Extract summary
   const summaryMatch = xmlString.match(/<summary>([\s\S]*?)<\/summary>/);
   if (summaryMatch) {
     result.summary = summaryMatch[1].trim();
@@ -120,7 +123,8 @@ function parseAdReport(xmlString: string): ParsedAdReport {
   return result;
 }
 
-async function streamClaudeResponse(imageBase64: string,fileType:string): Promise<any> {
+// streamClaudeResponse function (unchanged)
+async function streamClaudeResponse(imageBase64: string, fileType: string): Promise<any> {
   const systemPrompt = `
   You are an expert in ad performance analysis. Given an advertisement image, analyze its effectiveness and return a structured response.
 
@@ -156,32 +160,30 @@ async function streamClaudeResponse(imageBase64: string,fileType:string): Promis
 
   try {
     const payload = {
-      config: { system:systemPrompt },
+      config: { system: systemPrompt },
       messages: [
         {
-          "role":"user",
-          "content": [
+          role: "user",
+          content: [
             {
-                "type": "image",
-                "source": {
-                  "type": "base64",
-                  "media_type": fileType,
-                  "data": imageBase64,
-                },
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: fileType,
+                data: imageBase64,
+              },
             },
             {
-                "type": "text",
-                "text": "Analyze this advertisement image."
-            }
-        ]
-      }
-      ]
+              type: "text",
+              text: "Analyze this advertisement image.",
+            },
+          ],
+        },
+      ],
     };
-    
-    // Fixed spread operator usage with proper array and object arguments
+
     const response = await asyncTalkToAI(payload.messages as any[], payload.config as ClaudeConfig);
     return response.content;
-    
   } catch (error: any) {
     console.error("Claude API Error:", error.response?.data || error.message);
     throw new Error("Failed to get response from Claude API");
@@ -199,19 +201,12 @@ app.post("/analyze-ad", upload.single("adImage"), async (req: Request, res: Resp
     const imageBase64 = fs.readFileSync(req.file.path, { encoding: "base64" });
     const fileType = req.file.mimetype;
 
-    // Get response from Claude (fixed streaming approach)
-    const response = await streamClaudeResponse(imageBase64,fileType);
-    console.log(response);
-    
+    // Get response from Claude
+    const response = await streamClaudeResponse(imageBase64, fileType);
     const textContent = response?.find((item: any) => item?.type === "text")?.text || "";
     const parsedData = parseAdReport(textContent);
-    
-    res.json({analysis:parsedData});
 
-    
-    // Return the response as JSON
-    // res.json({ analysis: response });
-    
+    res.json({ analysis: parsedData });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   } finally {
@@ -226,4 +221,4 @@ app.post("/analyze-ad", upload.single("adImage"), async (req: Request, res: Resp
 
 const port = process.env.PORT || 3000;
 // Start Server
-app.listen(port, () => console.log("Server running on port 3000"));
+app.listen(port, () => console.log(`Server running on port ${port}`));
