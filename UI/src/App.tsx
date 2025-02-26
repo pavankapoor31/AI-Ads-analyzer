@@ -28,7 +28,6 @@ function App() {
         return;
       }
       handleSaveFile(file)
-      // setSelectedFile(file);
       setError(null);
     }
   };
