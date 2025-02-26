@@ -128,7 +128,27 @@ function App() {
           </div>
         </div>
 
-        {/* Upload Section */}
+        {error && (
+          <div className="mb-8 bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">Error</h3>
+                <div className="mt-2 text-sm text-red-700">
+                  <p>{error}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Analysis Grid */}
+        <div className="grid grid-cols-[40%_60%] gap-6 h-full">
+        <div className="h-full relative overflow-hidden">
         <div className="mb-8">
           <div
             className={`flex justify-center px-6 pt-5 pb-6 border-2 ${selectedFile ? 'border-indigo-500' : 'border-gray-300 border-dashed'
@@ -137,7 +157,12 @@ function App() {
             onDragOver={handleDragOver}
           >
             <div className="space-y-1 text-center">
-              <Upload className={`mx-auto h-12 w-12 ${selectedFile ? 'text-indigo-500' : 'text-gray-400'}`} />
+            <label
+                htmlFor="file-upload"
+                className="cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+              >
+                <Upload className="mx-auto h-12 w-12" />
+              </label>
               <div className="flex text-sm text-gray-600">
                 <label
                   htmlFor="file-upload"
@@ -164,30 +189,8 @@ function App() {
             </div>
           </div>
         </div>
-
-        {error && (
-          <div className="mb-8 bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">Error</h3>
-                <div className="mt-2 text-sm text-red-700">
-                  <p>{error}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Analysis Grid */}
-        <div className="grid grid-cols-[40%_60%] gap-6 h-full">
-        <div className="h-full relative overflow-hidden">
           {fileBlob && (
-            <img className="h-full w-full object-cover" src={fileBlob} alt="Scanned Image" />
+            <img className="h-auto max-w-full object-contain mb-2" src={fileBlob} alt="Scanned Image" />
           )}
           {isLoading && (
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan"></div>
@@ -216,7 +219,7 @@ function App() {
             </div>
           </div>
         ) : data?.summary ? (
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg">
+          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg mt-2">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
