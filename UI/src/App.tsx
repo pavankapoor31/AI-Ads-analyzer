@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Copy, Play } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 function App() {
   const [data, setData] = useState<AdAnalysis | null>(null);

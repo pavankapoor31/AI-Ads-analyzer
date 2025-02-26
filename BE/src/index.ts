@@ -156,7 +156,9 @@ async function streamClaudeResponse(imageBase64: string, fileType: string): Prom
   1. Ensure the response is **well-structured** using XML-like tags.
   2. Keep the **scores realistic** (out of 50).
   3. Focus on **advertising effectiveness**.
-  4. **Do not add extra text outside the structured format.**`;
+  4. Make sure to always have above structure format.
+  5. If the image is not an advertisement, or any errors with it, ensure you stick to the response and send summary as " <summary>Brief summary of why this image cant be used for this purpose</summary>"
+  6. **Do not add extra text outside the structured format.**`;
 
   try {
     const payload = {
@@ -183,6 +185,7 @@ async function streamClaudeResponse(imageBase64: string, fileType: string): Prom
     };
 
     const response = await asyncTalkToAI(payload.messages as any[], payload.config as ClaudeConfig);
+    console.log(response.content);
     return response.content;
   } catch (error: any) {
     console.error("Claude API Error:", error.response?.data || error.message);
