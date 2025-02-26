@@ -105,9 +105,12 @@ function App() {
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
+          <div className="">
           <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
-            Ad Performance Analysis
+            AI Meta Ads Analyzer
           </h1>
+          <div className='text-blue-700' >AI-powered analysis of every ad</div>
+          </div>
           <div className="flex gap-4">
             <button
               onClick={analyzeImage}
@@ -168,7 +171,7 @@ function App() {
                   htmlFor="file-upload"
                   className="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                 >
-                  <span>Upload a file</span>
+                  <span>Upload an image of your ad</span>
                   <input
                     id="file-upload"
                     name="file-upload"
