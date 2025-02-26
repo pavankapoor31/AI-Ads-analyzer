@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Upload, RefreshCw, Copy, Play } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/';
+const API_BASE_URL = 'http://localhost:3000';
 
 function App() {
   const [data, setData] = useState<AdAnalysis | null>(null);
@@ -186,9 +186,15 @@ function App() {
 
         {/* Analysis Grid */}
         <div className="grid grid-cols-[40%_60%] gap-6 h-full">
-          <div className="h-full">
-            {fileBlob && <img className="h-full" src={fileBlob} />}
-          </div>
+        <div className="h-full relative overflow-hidden">
+          {fileBlob && (
+            <img className="h-full w-full object-cover" src={fileBlob} alt="Scanned Image" />
+          )}
+          {isLoading && (
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan"></div>
+          )}
+        </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <ScoreCard title="Hook" analysis={data?.hook} isLoading={isLoading} />
             <ScoreCard title="Script" analysis={data?.script} isLoading={isLoading} />

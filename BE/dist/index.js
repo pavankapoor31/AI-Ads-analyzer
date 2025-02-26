@@ -22,7 +22,7 @@ const anthropic = new sdk_1.default();
 const asyncTalkToAI = async (messages, config = {}) => {
     const payload = {
         model: "claude-3-5-sonnet-20241022",
-        max_tokens: 1000,
+        max_tokens: 3000,
         messages: messages,
         ...config
     };
