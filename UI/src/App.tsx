@@ -40,8 +40,8 @@ function App() {
         setError('File size exceeds 100MB limit');
         return;
       }
-      if (!['video/mp4', 'video/quicktime'].includes(file.type)) {
-        setError('Please upload an MP4 or MOV file');
+      if (!['jpeg', 'png', 'gif', 'jpg', 'image/png'].includes(file.type)) {
+        setError(`Please upload an image file; uploaded file type:${file.type}`);
         return;
       }
       handleSaveFile(file)
