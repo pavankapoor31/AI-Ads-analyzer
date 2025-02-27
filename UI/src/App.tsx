@@ -173,7 +173,7 @@ function App() {
         )}
 
         {/* Analysis Grid */}
-        <div className={`grid ${(selectedFile && imageSubmitted) ? 'grid-cols-[40%_60%]' : 'grid-cols-[100%]'} gap-8 h-full`}>
+        <div className={`grid grid-cols-[100%] gap-8 h-full ${selectedFile && imageSubmitted ? 'md:grid-cols-[40%_60%]' : 'md:grid-cols-[100%]'}`}>
           <div className="h-full">
             <div className="mb-8">
               <div
@@ -249,6 +249,14 @@ function App() {
               <ScoreCard title="Script" analysis={data?.script} isLoading={isLoading} />
               <ScoreCard title="Visuals" analysis={data?.visuals} isLoading={isLoading} />
               <ScoreCard title="Captions" analysis={data?.captions} isLoading={isLoading} />
+              {/* {data && Object.entries(data).map(([key, analysis]) => (
+                <ScoreCard
+                  key={key}
+                  title={key.charAt(0).toUpperCase() + key.slice(1)}
+                  analysis={analysis}
+                  isLoading={isLoading}
+                />
+              ))} */}
             </div>
         </div>
         {
