@@ -213,14 +213,14 @@ function App() {
                   )}
                 </div>
               </div>
-              <div className="text-gray-500 cursor-pointer mt-2 text-sm">
+{              !selectedFile && <div className="text-gray-500 cursor-pointer mt-2 text-sm">
                 <button
                   onClick={handleUseDummyImage}
                   className="inline-flex items-center px-3 py-1 text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200"
                 >
                   No Ad Yet? Use a Sample Image
                 </button>
-              </div>
+              </div>}
             </div>
             <div className='relative h-fit d-flex align-items-center'>
               {fileBlob && (
@@ -244,12 +244,12 @@ function App() {
             </div>
           </div>
 
-          {data && <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <ScoreCard title="Hook" analysis={data?.hook} isLoading={isLoading} />
-            <ScoreCard title="Script" analysis={data?.script} isLoading={isLoading} />
-            <ScoreCard title="Visuals" analysis={data?.visuals} isLoading={isLoading} />
-            <ScoreCard title="Captions" analysis={data?.captions} isLoading={isLoading} />
-          </div>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              <ScoreCard title="Hook" analysis={data?.hook} isLoading={isLoading} />
+              <ScoreCard title="Script" analysis={data?.script} isLoading={isLoading} />
+              <ScoreCard title="Visuals" analysis={data?.visuals} isLoading={isLoading} />
+              <ScoreCard title="Captions" analysis={data?.captions} isLoading={isLoading} />
+            </div>
         </div>
         {
           !selectedFile && <>
