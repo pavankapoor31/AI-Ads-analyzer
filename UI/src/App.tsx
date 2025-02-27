@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Upload, RefreshCw, Copy, Play } from 'lucide-react';
+import { Upload, RefreshCw, Copy, Play, ArrowUp, Lightbulb } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
 import BenefitCards from './components/BenifitsCard';
 import DUMMY_AD from "./static/burgerworld_ad.png"
+import logo from "./static/logo.webp";
+
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 function App() {
@@ -20,11 +23,12 @@ function App() {
     setFileBlob(URL.createObjectURL(file));
     setImageSubmitted(false);
   }
+
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        setError('File size exceeds 100MB limit');
+        setError('File size exceeds 10MB limit');
         return;
       }
       if (!['jpeg', 'png', 'gif', 'jpg', 'image/png'].includes(file.type)) {
@@ -40,8 +44,8 @@ function App() {
     event.preventDefault();
     const file = event.dataTransfer.files?.[0];
     if (file) {
-      if (file.size > 100 * 1024 * 1024) {
-        setError('File size exceeds 100MB limit');
+      if (file.size > 10 * 1024 * 1024) {
+        setError('File size exceeds 10MB limit');
         return;
       }
       if (!['jpeg', 'png', 'gif', 'jpg', 'image/png'].includes(file.type)) {
@@ -49,7 +53,6 @@ function App() {
         return;
       }
       handleSaveFile(file)
-      // setSelectedFile(file);
       setError(null);
     }
   };
@@ -104,15 +107,12 @@ function App() {
 
     navigator.clipboard.writeText(report);
   };
+
   const handleUseDummyImage = () => {
-    // Create a fetch to get the dummy image as a blob
     fetch(DUMMY_AD)
       .then(response => response.blob())
       .then(blob => {
-        // Create a File object from the blob
         const dummyFile = new File([blob], "dummy_ad.png", { type: "image/png" });
-        
-        // Use the existing handleSaveFile function
         handleSaveFile(dummyFile);
         setError(null);
       })
@@ -123,17 +123,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 via-gray-100 to-green-100">
-      <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-blue-100 to-indigo-100">
+      <div className="max-w-7xl mx-auto px-6 py-4 sm:px-8 lg:px-10">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-2">
-          <div className="">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">
-              AI Meta Ads Analyzer
-            </h1>
-            <div className='text-blue-700' >AI-powered analysis of every ad</div>
+        <div className="flex flex-col sm:flex-col md:flex-row justify-between items-center mb-4">
+          <div className="flex items-center mb-4 sm:mb-0">
+            <img src={logo} alt="AdWise Logo" className="h-10 w-auto mr-4" />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">AdWise</h1>
+              <p className="text-lg text-blue-600">Advanced AI Analysis for Every Ad Campaign</p>
+            </div>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 flex-wrap justify-center">
             <button
               onClick={analyzeImage}
               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
@@ -172,28 +173,27 @@ function App() {
         )}
 
         {/* Analysis Grid */}
-        <div className={`grid  ${(selectedFile && imageSubmitted) ? 'grid-cols-[40%_60%]' : 'grid-cols-[100%]'} gap-6 h-full`}>
-          <div className="h-full ">
+        <div className={`grid ${(selectedFile && imageSubmitted) ? 'grid-cols-[40%_60%]' : 'grid-cols-[100%]'} gap-8 h-full`}>
+          <div className="h-full">
             <div className="mb-8">
               <div
-                className={`flex justify-center px-6 pt-5 pb-6 border-2 ${selectedFile ? 'border-indigo-500' : 'border-gray-300 border-dashed col-span-full row-span-full'
-                  } rounded-lg hover:border-indigo-500 transition-colors duration-200`}
+                className={`flex justify-center px-6 pt-5 pb-6 border-2 ${selectedFile ? 'border-indigo-500' : 'border-gray-300 border-dashed hover:border-indigo-500 hover:bg-indigo-50'} rounded-xl transition-colors duration-200`}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
               >
-                <div className="space-y-1 text-center">
+                <div className="space-y-2 text-center">
                   <label
                     htmlFor="file-upload"
-                    className="cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                    className="cursor-pointer rounded-md font-semibold text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
                   >
-                    <Upload className="mx-auto h-12 w-12" />
+                    <Upload className="mx-auto h-16 w-16" />
                   </label>
-                  <div className="flex text-sm text-gray-600">
+                  <div className="flex text-sm text-gray-600 justify-center">
                     <label
                       htmlFor="file-upload"
                       className="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none"
                     >
-                      <span>Upload an image of your ad</span>
+                      <span>Upload Your Ad Image</span>
                       <input
                         id="file-upload"
                         name="file-upload"
@@ -209,15 +209,22 @@ function App() {
                   {selectedFile ? (
                     <p className="text-sm text-indigo-600">{selectedFile.name}</p>
                   ) : (
-                    <p className="text-xs text-gray-500">Jpeg, Jpg, Png up to 10MB</p>
+                    <p className="text-sm font-medium text-gray-600">Supports JPEG, PNG, or JPG Files (Up to 10MB)</p>
                   )}
                 </div>
               </div>
-              <div className="text-gray-500 cursor-pointer mt-0 text-sm"  onClick={handleUseDummyImage} > Dont have an ad yet? click here to use a dummy ad image </div>
+              <div className="text-gray-500 cursor-pointer mt-2 text-sm">
+                <button
+                  onClick={handleUseDummyImage}
+                  className="inline-flex items-center px-3 py-1 text-indigo-600 bg-indigo-100 rounded-md hover:bg-indigo-200"
+                >
+                  No Ad Yet? Use a Sample Image
+                </button>
+              </div>
             </div>
             <div className='relative h-fit d-flex align-items-center'>
               {fileBlob && (
-                <div className="relative  overflow-hidden w-full flex justify-center">
+                <div className="relative overflow-hidden w-full flex justify-center">
                   <img className="h-auto max-w-full object-contain mb-2" src={fileBlob} alt="Scanned Image" />
                   {isLoading && (
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-green-400 to-transparent animate-scan"></div>
@@ -237,12 +244,12 @@ function App() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {data && <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             <ScoreCard title="Hook" analysis={data?.hook} isLoading={isLoading} />
             <ScoreCard title="Script" analysis={data?.script} isLoading={isLoading} />
             <ScoreCard title="Visuals" analysis={data?.visuals} isLoading={isLoading} />
             <ScoreCard title="Captions" analysis={data?.captions} isLoading={isLoading} />
-          </div>
+          </div>}
         </div>
         {
           !selectedFile && <>
@@ -251,28 +258,28 @@ function App() {
         }
         {/* Summary Section */}
         {isLoading ? (
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg animate-pulse">
+          <div className="bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-lg animate-pulse">
             <div className="flex">
               <div className="flex-shrink-0">
-                <div className="h-5 w-5 bg-blue-200 rounded-full"></div>
+                <div className="h-5 w-5 bg-indigo-200 rounded-full"></div>
               </div>
               <div className="ml-3 space-y-2">
-                <div className="h-4 bg-blue-200 rounded w-24"></div>
-                <div className="h-4 bg-blue-200 rounded w-3/4"></div>
+                <div className="h-4 bg-indigo-200 rounded w-24"></div>
+                <div className="h-4 bg-indigo-200 rounded w-3/4"></div>
               </div>
             </div>
           </div>
         ) : data?.summary ? (
-          <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-lg mt-2">
+          <div className="bg-indigo-50 border-l-4 border-indigo-400 p-4 rounded-lg mt-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-indigo-400" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="ml-3 mt-2">
-                <h3 className="text-sm font-medium text-blue-800">Summary</h3>
-                <div className="mt-3 text-sm text-blue-700">
+                <h3 className="text-base font-medium text-indigo-800">Summary</h3>
+                <div className="mt-3 text-base text-indigo-700">
                   <p>{data.summary}</p>
                 </div>
               </div>
@@ -280,7 +287,6 @@ function App() {
           </div>
         ) : null}
       </div>
-      
     </div>
   );
 }
