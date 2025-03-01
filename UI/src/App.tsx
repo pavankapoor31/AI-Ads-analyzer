@@ -1,13 +1,43 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Upload, RefreshCw, Copy, Play, ArrowUp, Lightbulb } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Upload, Copy, Play, } from 'lucide-react';
 import { ScoreCard } from './components/ScoreCard';
 import type { AdAnalysis } from './types';
 import BenefitCards from './components/BenifitsCard';
 import DUMMY_AD from "./static/burgerworld_ad.png"
 import logo from "./static/logo.webp";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://ai-ads-analyzer.vercel.app';
+
+/**
+ * App component serves as the main interface for uploading and analyzing advertisement images.
+ * 
+ * The component allows users to:
+ * - Upload or drag-and-drop an image file for analysis.
+ * - Use a dummy image for demonstration purposes.
+ * - Analyze the ad image by sending it to a backend API.
+ * - Display analysis results in scorecards, highlighting strengths and areas for improvement.
+ * - Copy the analysis report to the clipboard.
+ * 
+ * State variables:
+ * - `data`: Stores the analysis result of the ad image.
+ * - `isLoading`: Indicates if the analysis process is ongoing.
+ * - `error`: Holds any error messages during file selection or analysis.
+ * - `selectedFile`: The file object of the uploaded ad image.
+ * - `fileBlob`: The object URL for the selected image file.
+ * - `imageSubmitted`: Tracks if an image has been submitted for analysis.
+ * 
+ * Methods:
+ * - `handleSaveFile`: Saves the uploaded file and creates a blob URL.
+ * - `handleFileSelect`: Processes the file input change event for file uploads.
+ * - `handleDrop`: Handles the file drop event for drag-and-drop uploads.
+ * - `handleDragOver`: Prevents default behavior for drag-over events.
+ * - `analyzeImage`: Sends the selected file to the backend for analysis.
+ * - `handleCopyReport`: Copies the analysis report to the clipboard.
+ * - `handleUseDummyImage`: Loads and uses a dummy image for analysis.
+ */
 
 function App() {
   const [data, setData] = useState<AdAnalysis | null>(null);
@@ -71,17 +101,19 @@ function App() {
     setIsLoading(true);
     setError(null);
     setData(null);
-
+    
     const formData = new FormData();
     formData.append("adImage", selectedFile); // Match the backend's field name
-
+    
     try {
-      const response = await fetch(API_BASE_URL + "/analyze-ad", {
+      const response:Response = await fetch(API_BASE_URL + "/analyze-ad", {
         method: "POST",
         body: formData,
-      });
-
-      if (!response.ok) {
+      })
+      
+      if (!response?.ok) {
+        setImageSubmitted(false);
+        toast.error("The api failed to respond, Please try again!");
         throw new Error("Failed to analyze image");
       }
       const result = await response.json();
@@ -124,6 +156,17 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-blue-100 to-indigo-100">
+           <ToastContainer 
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
       <div className="max-w-7xl mx-auto px-6 py-4 sm:px-8 lg:px-10">
         {/* Header */}
         <div className="flex flex-col sm:flex-col md:flex-row justify-between items-center mb-4">
